@@ -17,6 +17,8 @@
 #define ACTIVATE 4
 #define TRANSFORM 5
 #define ATTACK 6
+#define LOOP_1 7
+#define LOOP_2 8
 
 typedef enum State {
   STATE_IDLE,
@@ -30,6 +32,7 @@ typedef enum State {
 } states;
 
 State lastSoundState = STATE_IDLE;
+uint8_t randomLoopTrackNum = 0;
 
 SoftwareSerial ss(TX, RX);
 DFRobotDFPlayerMini mp3;
@@ -78,7 +81,6 @@ void setup() {
   mp3.stop();
   mp3.setTimeOut(500); //Set serial communictaion time out 500ms
   mp3.volume(20);  //Set volume value (0~30).
-  mp3.play(1);
 }
 
 unsigned long last = 0;
@@ -239,7 +241,16 @@ void SetPlaying() {
   if(busy) { // means it is not busy and can play sounds
     switch(lastSoundState) {
       case STATE_INSERT:
-        mp3.loop(TRANSFORM_STANDBY);
+        randomLoopTrackNum = random(7,9);
+
+        if(randomLoopTrackNum == 7)
+          Serial.println(F("LOVE LIVE RANDOM LOOP"));
+        else if(randomLoopTrackNum == 8)
+          Serial.println(F("JELLYFISH JAM"));
+        else
+          ;
+
+        mp3.loop(randomLoopTrackNum);
         lastSoundState = STATE_HENSHIN_RDY;
         begin_sound_time = millis();
         playingSound = true;
